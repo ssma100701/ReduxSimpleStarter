@@ -3,6 +3,22 @@ import { Field, reduxForm } from 'redux-form';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { createPost } from '../actions';
+import _ from 'lodash';
+
+const FIELDS = {
+    title: {
+        type:'input',
+        label: 'Title for Post'
+     },
+    categories: {
+        type: 'input',
+        label: 'Enter some categories for this post'
+     },
+    content: {
+        type: 'textarea',
+        label: 'Post Contents'
+     }
+}
 
 class PostsNew extends Component {
     renderField(field) {
@@ -61,18 +77,11 @@ class PostsNew extends Component {
 function validate(values) {
     const errors = {};
 
-    if (!values.title) {
-        // title is exactly same as the name in Field
-        errors.title = "Enter a title!";
-    }
-
-    if (!values.categories) {
-        errors.categories = "Enter some categories";
-    }
-
-    if (!values.content) {
-        errors.content = "Enter some content please";
-    }
+    _.each(FIELDS, (type, field) => {
+        if(!values[field]) {
+            errors[field] = `Enter a ${field}`;
+        }
+    })
 
     // If error is empty, the form is fine to submit
     // If error has *any* properties, redux form assumes form is invalid.
@@ -81,7 +90,7 @@ function validate(values) {
 
 export default reduxForm({
     validate,
-    form: 'PostsNewForm'
+    form: _.keys(FIELDS)
 })(
     connect(null, { createPost })(PostsNew)
 );
